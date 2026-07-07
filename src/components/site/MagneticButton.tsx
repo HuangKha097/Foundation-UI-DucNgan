@@ -5,11 +5,12 @@ import { cn } from "@/lib/utils";
 type Props = {
   children: ReactNode;
   onClick?: () => void;
-  variant?: "primary" | "ghost";
+  variant?: "primary" | "ghost" | "light" | "outline-light";
   className?: string;
   type?: "button" | "submit";
   ariaLabel?: string;
   href?: string;
+  magnetic?: boolean;
 };
 
 export function MagneticButton({
@@ -20,6 +21,7 @@ export function MagneticButton({
   type = "button",
   ariaLabel,
   href,
+  magnetic = true,
 }: Props) {
   const ref = useRef<any>(null);
 
@@ -43,15 +45,19 @@ export function MagneticButton({
   const styles =
     variant === "primary"
       ? "bg-walnut text-white hover:bg-walnut-deep shadow-soft"
-      : "border border-walnut/40 text-walnut-deep hover:bg-walnut hover:text-white";
+      : variant === "light"
+        ? "bg-paper text-walnut-deep hover:bg-white shadow-soft"
+        : variant === "outline-light"
+          ? "border border-paper/40 text-paper hover:bg-paper hover:text-walnut-deep"
+          : "border border-walnut/40 text-walnut-deep hover:bg-walnut hover:text-white";
 
   if (href) {
     return (
       <motion.a
         ref={ref}
         href={href}
-        onMouseMove={handleMove}
-        onMouseLeave={handleLeave}
+        onMouseMove={magnetic ? handleMove : undefined}
+        onMouseLeave={magnetic ? handleLeave : undefined}
         aria-label={ariaLabel}
         className={cn(base, styles, className)}
       >
@@ -65,8 +71,8 @@ export function MagneticButton({
       ref={ref}
       type={type}
       onClick={onClick}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
+      onMouseMove={magnetic ? handleMove : undefined}
+      onMouseLeave={magnetic ? handleLeave : undefined}
       aria-label={ariaLabel}
       className={cn(base, styles, className)}
     >

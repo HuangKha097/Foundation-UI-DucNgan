@@ -25,7 +25,7 @@ export const resources = {
       },
       footer: {
         description:
-          "Nhạc cụ truyền thống Việt Nam, được chế tác thủ công tại các xưởng nhỏ ở Hà Nội, Huế và đồng bằng sông Cửu Long từ năm 1994.",
+          "Hiệu đàn Đức Ngân - nhà Phân phối và bán lẻ nhạc cụ dân tộc truyền thống Việt Nam.",
         newsletterPlaceholder: "Đăng ký nhận thư quý",
         subscribe: "Đăng ký",
         colShop: "Cửa hàng",
@@ -39,8 +39,8 @@ export const resources = {
         linkStories: "Câu chuyện",
         linkShowroom: "Tham quan showroom",
         linkContact: "Liên hệ",
-        addressLine1: "12 Phố Hàng Bún",
-        addressLine2: "Ba Đình, Hà Nội",
+        addressLine1: "526 Điện Biên Phủ, P. 11",
+        addressLine2: "Quận 10, TP. Hồ Chí Minh",
         addressLine3: "Việt Nam",
         hours: "Thứ Ba – Chủ Nhật · 10:00 – 18:00",
         openInMaps: "Mở trong Bản đồ",
@@ -165,8 +165,8 @@ export const resources = {
         note: "Chúng tôi trả lời mọi thư trong vòng hai ngày làm việc.",
         send: "Gửi tin nhắn",
         showroomEyebrow: "Showroom",
-        showroomTitle: "Đức Ngân Hà Nội",
-        mapLabel: "Bản đồ · Hà Nội",
+        showroomTitle: "Đức Ngân TP. Hồ Chí Minh",
+        mapLabel: "Bản đồ · TP. Hồ Chí Minh",
       },
       craftsmanship: {
         eyebrow: "Nghệ thuật · Craftsmanship",
@@ -401,7 +401,7 @@ export const resources = {
       },
       footer: {
         description:
-          "Vietnamese traditional instruments, handcrafted in small workshops in Hà Nội, Huế and the Mekong delta since 1994.",
+          "Hiệu đàn Đức Ngân — distributor and retailer of traditional Vietnamese folk musical instruments.",
         newsletterPlaceholder: "Join our quarterly letter",
         subscribe: "Subscribe",
         colShop: "Shop",
@@ -415,8 +415,8 @@ export const resources = {
         linkStories: "Stories",
         linkShowroom: "Showroom visits",
         linkContact: "Contact",
-        addressLine1: "12 Phố Hàng Bún",
-        addressLine2: "Ba Đình, Hà Nội",
+        addressLine1: "526 Điện Biên Phủ, Ward 11",
+        addressLine2: "District 10, Ho Chi Minh City",
         addressLine3: "Vietnam",
         hours: "Tue – Sun · 10:00 – 18:00",
         openInMaps: "Open in Maps",
@@ -535,8 +535,8 @@ export const resources = {
         note: "We answer letters within two business days, personally.",
         send: "Send Message",
         showroomEyebrow: "Showroom",
-        showroomTitle: "Đức Ngân Hà Nội",
-        mapLabel: "Map · Hà Nội",
+        showroomTitle: "Đức Ngân Ho Chi Minh City",
+        mapLabel: "Map · Ho Chi Minh City",
       },
       craftsmanship: {
         eyebrow: "Craftsmanship · Nghệ Thuật",

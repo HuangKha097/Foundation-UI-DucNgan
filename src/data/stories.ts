@@ -1,6 +1,6 @@
 import culture from "@/assets/culture.jpg";
 import craft from "@/assets/craft.jpg";
-import artisan from "@/assets/artisan.jpg";
+import artisanAsset from "@/assets/nghenhan.png.asset.json";
 import tranh from "@/assets/inst-dantranh.jpg";
 
 export type Story = {
@@ -71,7 +71,7 @@ export const stories: Story[] = [
     ],
     category: "Guides",
     readingTime: "5 min read",
-    image: artisan,
+    image: artisanAsset.url,
     date: "March 2026",
   },
 ];

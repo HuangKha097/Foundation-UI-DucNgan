@@ -3,6 +3,9 @@ import imgTranh from "@/assets/inst-dantranh.jpg";
 import imgBau from "@/assets/inst-danbau.jpg";
 import imgTyba from "@/assets/inst-dantyba.jpg";
 import imgNguyet from "@/assets/inst-dannguyet.jpg";
+import imgTranhCamLai from "@/assets/inst-dantranh-camlai.jpg.asset.json";
+import imgKim from "@/assets/inst-dankim.jpg.asset.json";
+import imgSen from "@/assets/inst-dansen.jpg.asset.json";
 
 export type Instrument = {
   slug: string;
@@ -27,19 +30,19 @@ export const instruments: Instrument[] = [
     slug: "dan-tranh",
     name: "Đàn Tranh",
     category: "Zither",
-    tagline: "The Queen of Vietnamese traditional instruments.",
+    tagline: "Đàn tranh 19 dây cẩm lai khảm hoa lan.",
     description:
-      "A sixteen-string zither with a voice as clear as spring water. Handcarved from aged jackfruit wood and inlaid with mother-of-pearl, each Đàn Tranh sings the songs of the Red River delta.",
+      "Đàn tranh 19 dây làm từ gỗ cẩm lai quý, mặt đàn khảm trai hoa lan tinh xảo. Âm thanh trong trẻo, ngân vang, là lựa chọn hàng đầu cho nghệ sĩ chuyên nghiệp.",
     price: format(24_500_000),
     rating: 4.9,
     reviews: 36,
-    image: imgTranh,
-    hero,
-    materials: ["Aged jackfruit wood", "Mother-of-pearl inlay", "Silk-wound strings"],
+    image: imgTranhCamLai.url,
+    hero: imgTranhCamLai.url,
+    materials: ["Gỗ cẩm lai", "Khảm trai hoa lan", "Dây kim loại bọc lụa"],
     specs: {
-      Strings: "16",
+      Strings: "19",
       Length: "110 cm",
-      Wood: "Aged jackfruit",
+      Wood: "Cẩm lai",
       Origin: "Hà Nội workshop",
       Finish: "Natural shellac",
     },
@@ -54,15 +57,15 @@ export const instruments: Instrument[] = [
     slug: "dan-bau",
     name: "Đàn Bầu",
     category: "Monochord",
-    tagline: "One string. A thousand voices.",
+    tagline: "Một dây. Ngàn cung bậc.",
     description:
-      "The monochord of Vietnam. A single string, a lacquered gourd, and a bamboo bending rod produce a voice so human it has been called the sound of the Vietnamese soul.",
+      "Đàn độc huyền của Việt Nam. Một dây duy nhất, bầu cộng hưởng sơn mài và cần trúc uốn tạo nên tiếng đàn ngân nga như tiếng lòng người Việt.",
     price: format(9_800_000),
     rating: 4.8,
     reviews: 18,
     image: imgBau,
     hero: imgBau,
-    materials: ["Lacquered rosewood", "Bamboo bending rod", "Coconut gourd resonator"],
+    materials: ["Gỗ trắc sơn mài", "Cần trúc uốn", "Bầu gáo dừa"],
     specs: {
       Strings: "1",
       Length: "115 cm",
@@ -81,15 +84,15 @@ export const instruments: Instrument[] = [
     slug: "dan-ty-ba",
     name: "Đàn Tỳ Bà",
     category: "Lute",
-    tagline: "A pear-shaped lute with royal heritage.",
+    tagline: "Đàn hình quả lê, mang phong cách cung đình.",
     description:
-      "Descended from the imperial court, the Đàn Tỳ Bà pairs a warm pear-shaped body with four silk-wound strings. It carries the poise of centuries.",
+      "Bắt nguồn từ nhã nhạc cung đình, Đàn Tỳ Bà có thân hình quả lê với bốn dây bọc lụa. Tiếng đàn trầm ấm, mang dấu ấn nhiều thế kỷ.",
     price: format(22_000_000),
     rating: 4.7,
     reviews: 31,
     image: imgTyba,
     hero: imgTyba,
-    materials: ["Paulownia soundboard", "Walnut neck", "Silk strings"],
+    materials: ["Mặt gỗ ngô đồng", "Cần gỗ óc chó", "Dây bọc lụa"],
     specs: {
       Strings: "4",
       Length: "94 cm",
@@ -108,15 +111,15 @@ export const instruments: Instrument[] = [
     slug: "dan-nguyet",
     name: "Đàn Nguyệt",
     category: "Moon Lute",
-    tagline: "The moon lute with deep resonant tones.",
+    tagline: "Đàn hình trăng tròn, âm trầm sâu lắng.",
     description:
-      "Two strings, a full round body, a long elegant neck. The Đàn Nguyệt anchors ceremonial ensembles with a low, meditative pulse.",
+      "Hai dây, thân tròn đầy đặn, cần đàn dài thanh thoát. Đàn Nguyệt giữ nhịp trầm trong các dàn nhạc lễ và ca trù truyền thống.",
     price: format(18_900_000),
     rating: 4.8,
     reviews: 24,
     image: imgNguyet,
     hero: imgNguyet,
-    materials: ["Aged mít wood", "Walnut neck", "Nylon strings"],
+    materials: ["Gỗ mít lâu năm", "Cần gỗ óc chó", "Dây nylon"],
     specs: {
       Strings: "2",
       Length: "108 cm",
@@ -135,15 +138,15 @@ export const instruments: Instrument[] = [
     slug: "dan-kim",
     name: "Đàn Kìm",
     category: "Lute",
-    tagline: "A twin of the moon, tuned for storytelling.",
+    tagline: "Đàn kìm gỗ tim, thân tròn mộc mạc.",
     description:
-      "A close relative of the Đàn Nguyệt, favored by southern water-puppet and cải lương ensembles for its narrative voice.",
+      "Đàn kìm thân gỗ tim, mặt đàn phẳng tự nhiên, cần dài thanh thoát. Tiếng đàn ấm, rõ nét — phù hợp với cải lương và đờn ca tài tử Nam Bộ.",
     price: format(16_400_000),
     rating: 4.7,
     reviews: 12,
-    image: imgNguyet,
-    hero: imgNguyet,
-    materials: ["Aged mít wood", "Rosewood neck"],
+    image: imgKim.url,
+    hero: imgKim.url,
+    materials: ["Gỗ tim", "Cần gỗ trắc", "Dây nylon"],
     specs: {
       Strings: "2",
       Length: "104 cm",
@@ -161,15 +164,15 @@ export const instruments: Instrument[] = [
     slug: "dan-sen",
     name: "Đàn Sến",
     category: "Lute",
-    tagline: "A crisp voice for southern folk.",
+    tagline: "Đàn sến mặt hoa sen, hoa trúc thủ công.",
     description:
-      "A bright two-stringed lute used across southern folk repertoire. Bright, articulate, and quick.",
+      "Đàn sến hai dây với mặt đàn vẽ hoa sen và hoa trúc thủ công. Tiếng đàn sáng, nhanh, đanh gọn — điểm nhấn trong dàn nhạc dân ca Nam Bộ.",
     price: format(12_600_000),
     rating: 4.6,
     reviews: 9,
-    image: imgTyba,
-    hero: imgTyba,
-    materials: ["Paulownia soundboard", "Rosewood neck"],
+    image: imgSen.url,
+    hero: imgSen.url,
+    materials: ["Mặt gỗ ngô đồng vẽ tay", "Cần gỗ trắc", "Dây kim loại"],
     specs: {
       Strings: "2",
       Length: "88 cm",

@@ -6,9 +6,11 @@ import { cn } from "@/lib/utils";
 export function LanguageSwitcher({
   className,
   compact,
+  scrolled,
 }: {
   className?: string;
   compact?: boolean;
+  scrolled?: boolean;
 }) {
   const { i18n, t } = useTranslation();
   const current = (i18n.language as Lang) === "en" ? "en" : "vi";
@@ -21,7 +23,10 @@ export function LanguageSwitcher({
         aria-label={t("nav.language")}
         onClick={() => setLang(next)}
         className={cn(
-          "grid h-7 min-w-[30px] place-items-center rounded-xs border border-line/70 bg-white/40 px-2 text-[10px] font-medium tracking-[0.18em] uppercase text-walnut backdrop-blur-sm transition-colors hover:bg-white/70",
+          "grid h-7 min-w-[30px] place-items-center rounded-xs border px-2 text-[10px] font-medium tracking-[0.18em] uppercase backdrop-blur-sm transition-colors",
+          scrolled
+            ? "border-line/70 bg-white/40 text-walnut hover:bg-white/70"
+            : "border-paper/30 bg-black/20 text-paper hover:bg-white/20",
           className,
         )}
       >
@@ -35,7 +40,10 @@ export function LanguageSwitcher({
       role="group"
       aria-label={t("nav.language")}
       className={cn(
-        "ml-1 flex items-center gap-0.5 rounded-xs border border-line/70 bg-white/40 p-0.5 text-[10px] font-medium tracking-[0.18em] uppercase backdrop-blur-sm",
+        "ml-1 flex items-center gap-0.5 rounded-xs border p-0.5 text-[10px] font-medium tracking-[0.18em] uppercase backdrop-blur-sm",
+        scrolled
+          ? "border-line/70 bg-white/40"
+          : "border-paper/30 bg-black/20",
         className,
       )}
     >
@@ -50,8 +58,12 @@ export function LanguageSwitcher({
             className={cn(
               "grid h-7 min-w-[30px] place-items-center rounded-xs px-2 transition-colors",
               active
-                ? "bg-walnut text-white"
-                : "text-ink/60 hover:text-walnut-deep",
+                ? scrolled
+                  ? "bg-walnut text-white"
+                  : "bg-paper text-walnut-deep"
+                : scrolled
+                  ? "text-ink/60 hover:text-walnut-deep"
+                  : "text-paper/70 hover:text-paper",
             )}
           >
             {lng}

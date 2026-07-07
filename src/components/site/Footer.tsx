@@ -87,7 +87,7 @@ export function Footer() {
         </svg>
         <div className="relative z-10 flex h-full items-center justify-center">
           <a
-            href="https://maps.google.com"
+            href="https://www.google.com/maps/search/?api=1&query=526+%C4%90i%E1%BB%87n+Bi%C3%AAn+Ph%E1%BB%A7%2C+Ph%C6%B0%E1%BB%9Dng+11%2C+Qu%E1%BA%ADn+10%2C+TP.+H%E1%BB%93+Ch%C3%AD+Minh"
             target="_blank"
             rel="noreferrer"
             className="group inline-flex items-center gap-2 rounded-xs border border-white/25 bg-white/5 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white hover:text-walnut-deep"

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouter } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { Search, Heart, ShoppingBag, Menu, X, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,8 +24,12 @@ export function Navbar() {
   const { t } = useTranslation();
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const links = linkDefs.map((l) => ({ ...l, label: t(`nav.${l.key}`) }));
+
+  const isHome = router.state.location.pathname === "/";
+  const darkNav = !isHome || scrolled;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -38,7 +42,7 @@ export function Navbar() {
     <header
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]",
-        scrolled
+        darkNav
           ? "bg-paper/85 border-b border-line/60 backdrop-blur-xl"
           : "bg-transparent",
       )}
@@ -46,11 +50,11 @@ export function Navbar() {
       <div
         className={cn(
           "container-wide flex items-center justify-between transition-all duration-700",
-          scrolled ? "h-16" : "h-20 md:h-24",
+          darkNav ? "h-16" : "h-20 md:h-24",
         )}
       >
         <Link to="/" className="flex items-center gap-2" aria-label={t("nav.brandAria")}>
-          <Logo scrolled={scrolled} />
+          <Logo darkNav={darkNav} />
         </Link>
 
         <nav className="hidden items-center gap-9 lg:flex">
@@ -58,8 +62,16 @@ export function Navbar() {
             <Link
               key={l.to}
               to={l.to}
-              className="link-underline text-[13px] tracking-wide text-ink/80 transition-colors hover:text-walnut"
-              activeProps={{ "data-active": "true", className: "text-walnut" }}
+              className={cn(
+                "link-underline text-[13px] tracking-wide transition-colors",
+                darkNav
+                  ? "text-ink/80 hover:text-walnut"
+                  : "text-paper/85 hover:text-bamboo",
+              )}
+              activeProps={{
+                "data-active": "true",
+                className: darkNav ? "text-walnut" : "text-bamboo",
+              }}
               activeOptions={{ exact: l.to === "/" }}
             >
               {l.label}
@@ -68,14 +80,14 @@ export function Navbar() {
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-3">
-          <LanguageSwitcher className="hidden lg:flex" />
-          <IconButton label={t("nav.search")}>
+          <LanguageSwitcher scrolled={darkNav} className="hidden lg:flex" />
+          <IconButton label={t("nav.search")} scrolled={darkNav}>
             <Search className="size-4.5" />
           </IconButton>
-          <IconButton label={t("nav.wishlist")}>
+          <IconButton label={t("nav.wishlist")} scrolled={darkNav}>
             <Heart className="size-4.5" />
           </IconButton>
-          <IconButton label={t("nav.cart")} onClick={openCart}>
+          <IconButton label={t("nav.cart")} onClick={openCart} scrolled={darkNav}>
             <div className="relative">
               <ShoppingBag className="size-4.5" />
               <AnimatePresence>
@@ -146,15 +158,25 @@ export function Navbar() {
             <Link
               to="/auth"
               aria-label="Đăng nhập"
-              className="grid size-10 place-items-center rounded-xs text-ink/75 transition-colors duration-500 hover:bg-line/50 hover:text-walnut"
+              className={cn(
+                "grid size-10 place-items-center rounded-xs transition-colors duration-500",
+                darkNav
+                  ? "text-ink/75 hover:bg-line/50 hover:text-walnut"
+                  : "text-paper/80 hover:bg-white/10 hover:text-paper",
+              )}
             >
               <User className="size-4.5" />
             </Link>
           )}
           <button
             aria-label={open ? t("nav.closeMenu") : t("nav.openMenu")}
-            className="ml-1 grid size-10 place-items-center rounded-xs text-ink/80 transition hover:bg-line/50 lg:hidden"
             onClick={() => setOpen((o) => !o)}
+            className={cn(
+              "ml-1 grid size-10 place-items-center rounded-xs transition lg:hidden",
+              open || darkNav
+                ? "text-ink/80 hover:bg-line/50"
+                : "text-paper/90 hover:bg-white/10",
+            )}
           >
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </button>
@@ -182,7 +204,7 @@ export function Navbar() {
             </Link>
           ))}
           <div className="mt-6 pt-6 border-t border-line/60">
-            <LanguageSwitcher compact />
+            <LanguageSwitcher compact scrolled />
           </div>
         </nav>
       </div>
@@ -194,35 +216,47 @@ function IconButton({
   label,
   children,
   onClick,
+  scrolled,
 }: {
   label: string;
   children: React.ReactNode;
   onClick?: () => void;
+  scrolled?: boolean;
 }) {
   return (
     <button
       aria-label={label}
       onClick={onClick}
-      className="grid size-10 place-items-center rounded-xs text-ink/75 transition-colors duration-500 hover:bg-line/50 hover:text-walnut"
+      className={cn(
+        "grid size-10 place-items-center rounded-xs transition-colors duration-500",
+        scrolled
+          ? "text-ink/75 hover:bg-line/50 hover:text-walnut"
+          : "text-paper/80 hover:bg-white/10 hover:text-paper",
+      )}
     >
       {children}
     </button>
   );
 }
 
-function Logo({ scrolled }: { scrolled: boolean }) {
+function Logo({ darkNav }: { darkNav: boolean }) {
   const { t } = useTranslation();
   return (
     <div className="leading-none">
       <div
         className={cn(
-          "font-display font-semibold tracking-tight text-walnut-deep transition-all duration-700",
-          scrolled ? "text-lg" : "text-xl md:text-[22px]",
+          "font-display font-semibold tracking-tight transition-all duration-700",
+          darkNav ? "text-lg text-walnut-deep" : "text-xl text-paper md:text-[22px]",
         )}
       >
         Đức Ngân
       </div>
-      <div className="mt-0.5 text-[9px] tracking-[0.3em] text-walnut/70 uppercase">
+      <div
+        className={cn(
+          "mt-0.5 text-[9px] tracking-[0.3em] uppercase transition-colors duration-700",
+          darkNav ? "text-walnut/70" : "text-paper/70",
+        )}
+      >
         {t("nav.brandTagline")}
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -11,21 +11,37 @@ import {
   Hammer,
   Leaf,
   Award,
+  Play,
+  Pause,
+  BookOpen,
+  Layers,
+  X,
 } from "lucide-react";
 
-import hero from "@/assets/hero-dantranh.jpg";
-import artisan from "@/assets/artisan.jpg";
+import heroBackground from "@/assets/hero-background-new.png.asset.json";
+import artisanAsset from "@/assets/nghenhan.png.asset.json";
 import culture from "@/assets/culture.jpg";
 import craft from "@/assets/craft.jpg";
 import imgTranh from "@/assets/inst-dantranh.jpg";
 import imgBau from "@/assets/inst-danbau.jpg";
+import cutTranh from "@/assets/cut-dantranh-camlai.png.asset.json";
+import cutBau from "@/assets/cut-danbau.png.asset.json";
+import cutTyba from "@/assets/cut-dantyba.png.asset.json";
+import cutNguyet from "@/assets/cut-dannguyet.png.asset.json";
+import cutKim from "@/assets/cut-dankim.png.asset.json";
+import modelTranh from "@/assets/model-dan-tranh.glb.asset.json";
+import modelBau from "@/assets/model-dan-bau.glb.asset.json";
+import modelTyba from "@/assets/model-dan-ty-ba.glb.asset.json";
+import modelNguyet from "@/assets/model-dan-nguyet.glb.asset.json";
+import modelKim from "@/assets/model-dan-kim.glb.asset.json";
 
-import { categories, featured } from "@/data/instruments";
+import { categories, featured, instruments } from "@/data/instruments";
 import { stories } from "@/data/stories";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Waveform } from "@/components/site/Waveform";
 import { MagneticButton } from "@/components/site/MagneticButton";
 import { Reveal, RevealStagger, revealItem } from "@/components/site/Reveal";
+import { InstrumentModel } from "@/components/site/InstrumentModel";
 import { useTranslation } from "react-i18next";
 
 export const Route = createFileRoute("/")({
@@ -50,123 +66,604 @@ function Index() {
 /* ------------------------------- HERO ---------------------------------- */
 function Hero() {
   const { t } = useTranslation();
-  const heroLines = [
-    t("home.hero.line1"),
-    t("home.hero.line2"),
-    t("home.hero.line3"),
-    t("home.hero.line4"),
-  ];
+  const cutoutMap: Record<string, string> = {
+    "dan-tranh": cutTranh.url,
+    "dan-bau": cutBau.url,
+    "dan-ty-ba": cutTyba.url,
+    "dan-nguyet": cutNguyet.url,
+    "dan-kim": cutKim.url,
+  };
+  const modelMap: Record<string, string> = {
+    "dan-tranh": modelTranh.url,
+    "dan-bau": modelBau.url,
+    "dan-ty-ba": modelTyba.url,
+    "dan-nguyet": modelNguyet.url,
+    "dan-kim": modelKim.url,
+  };
+  const showcase = instruments
+    .filter((i) => cutoutMap[i.slug])
+    .slice(0, 5)
+    .map((i) => ({ ...i, cutout: cutoutMap[i.slug], model: modelMap[i.slug] }));
+  const [active, setActive] = useState<number | null>(null);
+  const [playing, setPlaying] = useState(false);
+  const [focus, setFocus] = useState(2);
+  const [tab, setTab] = useState<"overview" | "sound" | "materials" | "craft">(
+    "overview",
+  );
+  const activeItem = active !== null ? showcase[active] : null;
+  const shiftFocus = (dir: 1 | -1) =>
+    setFocus((f) => (f + dir + showcase.length) % showcase.length);
+
+  // Reset tab and lock scroll when opening detail
+  useEffect(() => {
+    if (!activeItem) return;
+    setTab("overview");
+    const scrollY = window.scrollY;
+    const body = document.body;
+    const html = document.documentElement;
+    const prev = {
+      bodyOverflow: body.style.overflow,
+      bodyPosition: body.style.position,
+      bodyTop: body.style.top,
+      bodyLeft: body.style.left,
+      bodyRight: body.style.right,
+      bodyTouchAction: body.style.touchAction,
+      bodyOverscroll: body.style.overscrollBehavior,
+      htmlOverflow: html.style.overflow,
+      htmlTouchAction: html.style.touchAction,
+      htmlOverscroll: html.style.overscrollBehavior,
+    };
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.left = "0";
+    body.style.right = "0";
+    body.style.touchAction = "none";
+    body.style.overscrollBehavior = "none";
+    html.style.overflow = "hidden";
+    html.style.touchAction = "none";
+    html.style.overscrollBehavior = "none";
+    return () => {
+      body.style.overflow = prev.bodyOverflow;
+      body.style.position = prev.bodyPosition;
+      body.style.top = prev.bodyTop;
+      body.style.left = prev.bodyLeft;
+      body.style.right = prev.bodyRight;
+      body.style.touchAction = prev.bodyTouchAction;
+      body.style.overscrollBehavior = prev.bodyOverscroll;
+      html.style.overflow = prev.htmlOverflow;
+      html.style.touchAction = prev.htmlTouchAction;
+      html.style.overscrollBehavior = prev.htmlOverscroll;
+      requestAnimationFrame(() => window.scrollTo(0, scrollY));
+    };
+  }, [active]);
+
+  // ESC to close
+  useEffect(() => {
+    if (!activeItem) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActive(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [activeItem]);
+
   return (
-    <section className="relative overflow-hidden pt-28 pb-16 md:pt-36 md:pb-24">
-      <div className="paper-grain absolute inset-0 -z-10" aria-hidden />
+    <section className="relative flex h-screen flex-col overflow-hidden">
+      {/* Full-bleed background image */}
+      <motion.div
+        initial={{ scale: 1.08, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}
+        className="absolute inset-0 -z-20"
+      >
+        <img
+          src={heroBackground.url}
+          alt="Không gian thưởng trà và bonsai Á Đông ấm áp"
+          width={1920}
+          height={1080}
+          className="h-full w-full object-cover"
+        />
+      </motion.div>
+
+      {/* Dark overlays for legibility */}
       <div
-        className="absolute inset-x-0 top-0 -z-10 h-[70vh] opacity-[0.05]"
+        className="absolute inset-0 -z-10"
         aria-hidden
         style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, transparent 0 3px, currentColor 3px 4px)",
-          color: "var(--walnut)",
+          background:
+            "linear-gradient(105deg, color-mix(in oklab, var(--walnut-deep) 88%, transparent) 0%, color-mix(in oklab, var(--walnut-deep) 72%, transparent) 45%, color-mix(in oklab, var(--walnut-deep) 45%, transparent) 78%, color-mix(in oklab, var(--walnut-deep) 18%, transparent) 100%)",
+        }}
+      />
+      <div
+        className="absolute inset-0 -z-10"
+        aria-hidden
+        style={{
+          background:
+            "linear-gradient(to top, color-mix(in oklab, var(--walnut-deep) 85%, transparent) 0%, transparent 35%)",
         }}
       />
 
-      <div className="container-wide relative grid gap-12 md:grid-cols-12 md:gap-8">
-        <div className="relative md:col-span-6 md:pt-6 lg:col-span-5">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="eyebrow"
-          >
-            {t("home.hero.eyebrow")}
-          </motion.div>
+      <div className="container-wide relative z-10 flex h-full w-full flex-col py-4 md:py-6">
+        {/* Floating showcase — click an instrument to open detail */}
 
-          <h1 className="mt-6 font-display text-[13vw] leading-[0.94] font-medium tracking-[-0.02em] text-walnut-deep sm:text-6xl md:text-7xl lg:text-[88px]">
-            {heroLines.map(
-              (line, i) => (
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="relative mt-2 flex min-h-0 flex-1 flex-col md:mt-4"
+        >
+          {/* Active instrument name */}
+          {active === null && (
+            <div className="mt-20 mb-10 shrink-0 text-center md:mt-24 md:mb-12">
+              <AnimatePresence mode="wait">
                 <motion.span
-                  key={line}
-                  className="block overflow-hidden"
+                  key={showcase[focus].slug}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  className="inline-block rounded-full bg-walnut-deep/45 px-4 py-1 text-sm font-semibold tracking-[0.28em] text-bamboo uppercase backdrop-blur-sm drop-shadow-[0_2px_12px_rgba(0,0,0,0.95)] md:text-base"
+                  style={{ textShadow: "0 2px 16px rgba(0,0,0,0.9), 0 1px 4px rgba(0,0,0,0.9)" }}
                 >
-                  <motion.span
-                    className="block"
-                    initial={{ y: "110%" }}
-                    animate={{ y: 0 }}
-                    transition={{
-                      duration: 1.1,
-                      delay: 0.1 + i * 0.1,
-                      ease: [0.16, 1, 0.3, 1],
-                    }}
-                  >
-                    {line}
-                  </motion.span>
+                  {showcase[focus].name}
                 </motion.span>
-              ),
+              </AnimatePresence>
+            </div>
+          )}
+
+          <div
+            className="relative mx-auto flex min-h-0 w-full max-w-6xl flex-1 overflow-visible touch-pan-y"
+            onPointerDown={(e) => {
+              if (active !== null) return;
+              (e.currentTarget as HTMLDivElement).dataset.startX = String(e.clientX);
+              (e.currentTarget as HTMLDivElement).dataset.startY = String(e.clientY);
+            }}
+            onPointerUp={(e) => {
+              if (active !== null) return;
+              const el = e.currentTarget as HTMLDivElement;
+              const sx = Number(el.dataset.startX ?? NaN);
+              const sy = Number(el.dataset.startY ?? NaN);
+              delete el.dataset.startX;
+              delete el.dataset.startY;
+              if (!Number.isFinite(sx) || !Number.isFinite(sy)) return;
+              const dx = e.clientX - sx;
+              const dy = e.clientY - sy;
+              if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+              shiftFocus(dx < 0 ? 1 : -1);
+            }}
+            onPointerCancel={(e) => {
+              const el = e.currentTarget as HTMLDivElement;
+              delete el.dataset.startX;
+              delete el.dataset.startY;
+            }}
+          >
+            {/* Prev / next scroll buttons */}
+            {active === null && (
+              <>
+                <button
+                  onClick={() => shiftFocus(-1)}
+                  aria-label="Nhạc cụ trước"
+                  className="absolute top-1/2 left-2 z-20 grid size-12 -translate-y-1/2 place-items-center rounded-full border border-paper/25 bg-walnut-deep/50 text-paper backdrop-blur-md transition hover:border-bamboo hover:bg-bamboo hover:text-walnut-deep md:left-6"
+                >
+                  <ChevronLeft className="size-5" />
+                </button>
+                <button
+                  onClick={() => shiftFocus(1)}
+                  aria-label="Nhạc cụ kế"
+                  className="absolute top-1/2 right-2 z-20 grid size-12 -translate-y-1/2 place-items-center rounded-full border border-paper/25 bg-walnut-deep/50 text-paper backdrop-blur-md transition hover:border-bamboo hover:bg-bamboo hover:text-walnut-deep md:right-6"
+                >
+                  <ChevronRight className="size-5" />
+                </button>
+              </>
             )}
-          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-8 max-w-md text-[15px] leading-relaxed text-ink/70"
-          >
-            {t("home.hero.body")}
-          </motion.p>
+            {showcase.map((item, i) => {
+              const n = showcase.length;
+              // signed circular offset: -2,-1,0,1,2 for n=5
+              const raw = ((i - focus) % n + n) % n;
+              const offset = raw > n / 2 ? raw - n : raw;
+              const dist = Math.abs(offset);
+              const isFocus = dist === 0;
+              const scale = isFocus ? 1.28 : dist === 1 ? 0.88 : 0.72;
+              const yOff = isFocus ? -8 : dist === 1 ? 28 : 64;
+              const rotate = offset * 5;
+              const blur = isFocus ? 0 : dist === 1 ? 3 : 7;
+              const opacity = active === null
+                ? isFocus
+                  ? 1
+                  : dist === 1
+                    ? 0.32
+                    : 0.12
+                : isFocus
+                  ? 0.35
+                  : 0;
+              const gap = 300; // px between slots on desktop
+              const xOff = offset * gap;
+              const z = active === null ? 10 - dist : isFocus ? 5 : 0;
+              return (
+                <motion.button
+                  key={item.slug}
+                  layout
+                  layoutId={`hero-inst-${item.slug}`}
+                  onClick={() => {
+                    if (!isFocus) {
+                      setFocus(i);
+                      return;
+                    }
+                    setActive(i);
+                    setPlaying(false);
+                  }}
+                  aria-label={
+                    isFocus ? `Xem chi tiết ${item.name}` : `Chọn ${item.name}`
+                  }
+                  style={{ zIndex: z }}
+                  whileHover={active === null ? { y: yOff - 6, scale: scale * 1.05 } : undefined}
+                  animate={{
+                    rotate,
+                    scale,
+                    opacity,
+                    x: xOff,
+                    y: yOff,
+                    filter: `blur(${blur}px) brightness(${isFocus ? 1.05 : 0.45})`,
+                  }}
+                  transition={{ type: "spring", stiffness: 140, damping: 22 }}
+                  className="group absolute top-0 left-1/2 -ml-[115px] flex h-[92%] w-[230px] flex-col items-center justify-end md:-ml-[160px] md:w-[320px]"
+                >
+                  <div
+                    className="relative flex h-full w-full items-end justify-center"
+                    style={{ perspective: "1200px", transformStyle: "preserve-3d" }}
+                  >
+                    {/* Ground contact shadow (hard, close) */}
+                    <span
+                      aria-hidden
+                      className={`pointer-events-none absolute bottom-1 left-1/2 h-3 -translate-x-1/2 rounded-[50%] blur-md transition-all duration-500 ${
+                        isFocus ? "w-[62%] bg-black/70" : "w-[45%] bg-black/55"
+                      }`}
+                    />
+                    {/* Soft cast shadow (wide, diffuse) */}
+                    <span
+                      aria-hidden
+                      className={`pointer-events-none absolute -bottom-2 left-1/2 h-8 -translate-x-1/2 rounded-[50%] blur-2xl transition-all duration-500 ${
+                        isFocus ? "w-[95%] bg-black/55" : "w-[70%] bg-black/40"
+                      }`}
+                    />
+                    {/* Warm halo under focused piece */}
+                    {isFocus && (
+                      <span
+                        aria-hidden
+                        className="pointer-events-none absolute bottom-4 left-1/2 h-10 w-[80%] -translate-x-1/2 rounded-[50%] bg-bamboo/25 blur-3xl"
+                      />
+                    )}
+                    {item.model ? (
+                      <div
+                        className="relative h-full w-full transition-[filter] duration-500"
+                        style={{
+                          filter: isFocus
+                            ? "drop-shadow(-10px 20px 12px rgba(0,0,0,0.35)) drop-shadow(0 32px 24px rgba(0,0,0,0.5))"
+                            : "brightness(0.55) drop-shadow(0 20px 18px rgba(0,0,0,0.5))",
+                        }}
+                      >
+                        <InstrumentModel
+                          src={item.model}
+                          alt={item.name}
+                          active={isFocus && active === null}
+                        />
+                      </div>
+                    ) : (
+                      <img
+                        src={item.cutout}
+                        alt={item.name}
+                        className="relative max-h-full w-full object-contain transition-[filter,transform] duration-500 group-hover:scale-[1.02]"
+                        style={{
+                          filter: isFocus
+                            ? "brightness(1.06) contrast(1.05) drop-shadow(-14px 22px 10px rgba(0,0,0,0.35)) drop-shadow(0 42px 28px rgba(0,0,0,0.55)) drop-shadow(0 8px 4px rgba(0,0,0,0.4))"
+                            : "brightness(0.45) drop-shadow(-8px 14px 8px rgba(0,0,0,0.4)) drop-shadow(0 28px 22px rgba(0,0,0,0.55))",
+                          transform: `rotateX(${isFocus ? 6 : 3}deg) rotateY(${offset * -3}deg)`,
+                          transformOrigin: "50% 100%",
+                        }}
+                      />
+                    )}
+                  </div>
+                </motion.button>
+              );
+            })}
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-10 flex flex-wrap items-center gap-3"
-          >
-            <MagneticButton href="/shop">
-              {t("home.hero.ctaExplore")}
-              <ArrowRight className="size-4 transition-transform duration-500 group-hover:translate-x-1" />
-            </MagneticButton>
-            <MagneticButton variant="ghost" href="/craftsmanship">
-              {t("home.hero.ctaCraft")}
-              <ArrowUpRight className="size-4 transition-transform duration-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-            </MagneticButton>
-          </motion.div>
+          {/* Dots */}
+          {active === null && (
+            <div className="mt-2 flex items-center justify-center gap-2 md:mt-3">
+              {showcase.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setFocus(i)}
+                  aria-label={`Chọn nhạc cụ ${i + 1}`}
+                  className={`h-1.5 rounded-full transition-all ${
+                    i === focus ? "w-10 bg-bamboo" : "w-1.5 bg-paper/40 hover:bg-paper/70"
+                  }`}
+                />
+              ))}
+            </div>
+          )}
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.4, duration: 1 }}
-            className="mt-16 hidden items-center gap-3 text-[10px] tracking-[0.3em] text-ink/45 uppercase md:flex"
-          >
-            <span className="h-px w-8 bg-walnut/40" />
-            {t("home.hero.scroll")}
-          </motion.div>
-        </div>
+          {/* Expanded detail overlay */}
+          <AnimatePresence>
+            {activeItem && (
+              <motion.div
+                key="detail"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="fixed inset-0 z-[100]"
+              >
+                {/* Backdrop */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setActive(null)}
+                  className="absolute inset-0 bg-walnut-deep/85 backdrop-blur-xl"
+                />
+                {/* Radial glow accent */}
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    background:
+                      "radial-gradient(ellipse at 55% 55%, color-mix(in oklab, var(--walnut) 45%, transparent) 0%, transparent 55%)",
+                  }}
+                />
 
-        <div className="relative md:col-span-6 lg:col-span-7">
-          <motion.div
-            initial={{ opacity: 0, scale: 1.15, filter: "blur(12px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
-            className="relative aspect-[4/5] overflow-hidden rounded-xs bg-secondary sm:aspect-[5/6] md:aspect-[4/5]"
-          >
-            <img
-              src={hero}
-              alt="A handcrafted Đàn Tranh resting on a wooden stand"
-              width={1280}
-              height={1280}
-              className="h-full w-full object-cover"
-            />
-          </motion.div>
+                {/* Close */}
+                <button
+                  onClick={() => setActive(null)}
+                  aria-label="Đóng"
+                  className="absolute top-24 right-5 z-30 grid size-11 place-items-center rounded-full border border-paper/30 bg-walnut-deep/60 text-paper backdrop-blur-md transition hover:bg-paper hover:text-walnut-deep md:top-28 md:right-8"
+                >
+                  <X className="size-4" />
+                </button>
 
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
-            className="absolute right-4 -bottom-6 left-4 sm:right-8 sm:-bottom-8 sm:left-auto sm:w-[420px]"
-          >
-            <Waveform title={t("home.hero.sampleTitle")} duration="00:45" />
-          </motion.div>
-        </div>
+                <div className="container-wide relative grid h-full grid-cols-12 items-start gap-6 overflow-y-auto py-24 md:items-center md:overflow-hidden md:py-20">
+                  {/* Left: name + copy */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, transition: { duration: 0.2, ease: "easeOut" } }}
+                    transition={{ duration: 0.6, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    className="order-1 col-span-12 md:col-span-4"
+                  >
+                    <div className="eyebrow text-bamboo">{activeItem.category}</div>
+                    <h2 className="mt-4 font-display text-4xl leading-[0.95] text-paper uppercase md:text-6xl">
+                      {activeItem.name}
+                    </h2>
+
+                    {/* Tab content */}
+                    <div className="mt-8 min-h-[220px] max-w-md">
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={tab}
+                          initial={{ opacity: 0, y: 8 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -8 }}
+                          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                        >
+                          {tab === "overview" && (
+                            <p className="text-[14px] leading-relaxed text-paper/75">
+                              {activeItem.description}
+                            </p>
+                          )}
+                          {tab === "sound" && (
+                            <div>
+                              <p className="text-[14px] leading-relaxed text-paper/75">
+                                Âm sắc đặc trưng của {activeItem.name} — thu tại xưởng
+                                trong không gian yên tĩnh.
+                              </p>
+                              <button
+                                type="button"
+                                onClick={() => setPlaying((p) => !p)}
+                                className="mt-5 inline-flex items-center gap-3 rounded-full border border-bamboo/60 bg-bamboo/15 px-5 py-2 text-[12px] tracking-[0.2em] text-bamboo uppercase transition hover:bg-bamboo hover:text-walnut-deep"
+                              >
+                                {playing ? <Pause className="size-4" /> : <Play className="size-4" />}
+                                {playing ? "Tạm dừng" : "Nghe thử"}
+                              </button>
+                            </div>
+                          )}
+                          {tab === "materials" && (
+                            <ul className="space-y-3">
+                              {activeItem.materials.map((m) => (
+                                <li
+                                  key={m}
+                                  className="flex items-start gap-3 text-[14px] text-paper/80"
+                                >
+                                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-bamboo" />
+                                  {m}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          {tab === "craft" && (
+                            <ol className="space-y-3">
+                              {(activeItem as any).process?.slice(0, 4).map(
+                                (step: string, idx: number) => (
+                                  <li
+                                    key={idx}
+                                    className="flex gap-3 text-[13px] leading-relaxed text-paper/75"
+                                  >
+                                    <span className="font-display text-bamboo">
+                                      0{idx + 1}
+                                    </span>
+                                    <span>{step}</span>
+                                  </li>
+                                ),
+                              )}
+                            </ol>
+                          )}
+                        </motion.div>
+                      </AnimatePresence>
+                    </div>
+
+                    <Link
+                      to="/product/$slug"
+                      params={{ slug: activeItem.slug }}
+                      className="mt-8 inline-flex items-center gap-3 border-b border-paper/40 pb-1 text-sm text-paper transition hover:border-bamboo hover:text-bamboo"
+                    >
+                      Xem sản phẩm
+                      <ArrowUpRight className="size-4" />
+                    </Link>
+                  </motion.div>
+
+                  {/* Center: expanded tilted image */}
+                  <div className="order-3 col-span-12 flex justify-center md:order-none md:col-span-6">
+                    <motion.div
+                      layout
+                      layoutId={`hero-inst-${activeItem.slug}`}
+                      transition={{ type: "spring", stiffness: 260, damping: 30, mass: 0.8 }}
+                      className="relative flex h-[320px] w-[220px] items-center justify-center md:h-[640px] md:w-[440px]"
+                      style={{ transform: "rotate(-8deg)" }}
+                    >
+                      {/* Halo behind cutout */}
+                      <span
+                        aria-hidden
+                        className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(201,164,106,0.35)_0%,transparent_65%)] blur-2xl"
+                      />
+                      <img
+                        src={activeItem.cutout}
+                        alt={activeItem.name}
+                        className="relative h-full w-full object-contain drop-shadow-[0_60px_80px_rgba(0,0,0,0.7)]"
+                      />
+                    </motion.div>
+                  </div>
+
+                  {/* Right: action rail */}
+                  <motion.div
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, transition: { duration: 0.2, ease: "easeOut" } }}
+                    transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                    className="order-2 col-span-12 flex flex-row flex-wrap justify-center gap-2 md:absolute md:top-1/2 md:right-8 md:order-none md:col-span-2 md:-translate-y-1/2 md:flex-col md:justify-start md:gap-3"
+                  >
+                    <TabButton icon={BookOpen} label="Giới thiệu" active={tab === "overview"} onClick={() => setTab("overview")} />
+                    <TabButton icon={Play} label="Âm thanh" active={tab === "sound"} onClick={() => setTab("sound")} />
+                    <TabButton icon={Layers} label="Chất liệu" active={tab === "materials"} onClick={() => setTab("materials")} />
+                    <TabButton icon={Sparkles} label="Chế tác" active={tab === "craft"} onClick={() => setTab("craft")} />
+                  </motion.div>
+                </div>
+
+                {/* Prev / next dots */}
+                <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 items-center gap-2">
+                  {showcase.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setActive(i);
+                        setPlaying(false);
+                      }}
+                      aria-label={`Nhạc cụ ${i + 1}`}
+                      className={`h-1.5 rounded-full transition-all ${
+                        i === active ? "w-8 bg-bamboo" : "w-1.5 bg-paper/40"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* CTAs (hidden while detail open) */}
+        <AnimatePresence>
+          {active === null && (
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 12 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              className="mt-2 flex shrink-0 flex-wrap items-center justify-center gap-2 md:mt-3"
+            >
+              <MagneticButton href="/shop" variant="light" magnetic={false}>
+                {t("home.hero.ctaExplore")}
+                <ArrowRight className="size-4" />
+              </MagneticButton>
+              <MagneticButton variant="outline-light" href="/craftsmanship" magnetic={false}>
+                {t("home.hero.ctaCraft")}
+                <ArrowUpRight className="size-4" />
+              </MagneticButton>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
+  );
+}
+
+function ActionButton({
+  icon: Icon,
+  label,
+  onClick,
+  href,
+  active,
+}: {
+  icon: any;
+  label: string;
+  onClick?: () => void;
+  href?: string;
+  active?: boolean;
+}) {
+  const cls = `group flex items-center gap-3 rounded-full border border-paper/25 bg-walnut-deep/50 py-2 pr-4 pl-2 text-[11px] tracking-[0.18em] uppercase backdrop-blur-md transition hover:border-bamboo hover:bg-bamboo hover:text-walnut-deep ${
+    active ? "border-bamboo bg-bamboo text-walnut-deep" : "text-paper"
+  }`;
+  const inner = (
+    <>
+      <span className="grid size-9 place-items-center rounded-full bg-paper/10 transition group-hover:bg-walnut-deep/20">
+        <Icon className="size-4" />
+      </span>
+      <span className="hidden pr-1 md:inline">{label}</span>
+    </>
+  );
+  if (href) {
+    return (
+      <Link to={href as any} className={cls}>
+        {inner}
+      </Link>
+    );
+  }
+  return (
+    <button type="button" onClick={onClick} className={cls}>
+      {inner}
+    </button>
+  );
+}
+
+function TabButton({
+  icon: Icon,
+  label,
+  onClick,
+  active,
+}: {
+  icon: any;
+  label: string;
+  onClick: () => void;
+  active?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`group flex items-center gap-3 rounded-full border py-2 pr-4 pl-2 text-[11px] tracking-[0.18em] uppercase backdrop-blur-md transition ${
+        active
+          ? "border-bamboo bg-bamboo text-walnut-deep"
+          : "border-paper/25 bg-walnut-deep/50 text-paper hover:border-bamboo/70 hover:text-bamboo"
+      }`}
+    >
+      <span
+        className={`grid size-9 place-items-center rounded-full transition ${
+          active ? "bg-walnut-deep/20" : "bg-paper/10 group-hover:bg-paper/20"
+        }`}
+      >
+        <Icon className="size-4" />
+      </span>
+      <span className="hidden pr-1 md:inline">{label}</span>
+    </button>
   );
 }
 
@@ -321,7 +818,7 @@ function CraftsmanshipStory() {
         <div className="relative md:col-span-5">
           <div className="relative aspect-[4/5] overflow-hidden rounded-xs bg-walnut-deep">
             <motion.img
-              src={artisan}
+              src={artisanAsset.url}
               alt="Master artisan Nguyễn Văn Tâm at work"
               width={1280}
               height={1600}
@@ -399,7 +896,7 @@ function CraftsmanshipStory() {
 /* --------------------------- CULTURAL STORY ---------------------------- */
 function CulturalStory() {
   const { t } = useTranslation();
-  const cardImages = [culture, artisan, imgTranh, craft, imgBau];
+  const cardImages = [culture, artisanAsset.url, imgTranh, craft, imgBau];
   const cardsRaw = t("home.culture.cards", { returnObjects: true }) as {
     tag: string;
     title: string;

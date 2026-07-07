@@ -11,12 +11,12 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Visit our Hà Nội showroom or write to us. We answer every letter, personally.",
+          "Visit our Ho Chi Minh City showroom or write to us. We answer every letter, personally.",
       },
       { property: "og:title", content: "Contact · Đức Ngân" },
       {
         property: "og:description",
-        content: "Visit our Hà Nội showroom or write to us.",
+        content: "Visit our Ho Chi Minh City showroom or write to us.",
       },
     ],
   }),
@@ -75,27 +75,31 @@ function Contact() {
               </h2>
               <ul className="mt-8 space-y-6 text-sm text-ink/75">
                 <Row icon={<MapPin className="size-4" />}>
-                  12 Phố Hàng Bún, Ba Đình, Hà Nội, Vietnam
+                  526 Điện Biên Phủ, P. 11, Quận 10, TP. Hồ Chí Minh, Việt Nam
                 </Row>
                 <Row icon={<Clock className="size-4" />}>
                   {t("footer.hours")}
                 </Row>
-                <Row icon={<Phone className="size-4" />}>+84 24 3823 4567</Row>
-                <Row icon={<Mail className="size-4" />}>hello@ducngan.vn</Row>
+                <Row icon={<Phone className="size-4" />}>Tel.: (028) 3938 1286</Row>
+                <Row icon={<Phone className="size-4" />}>Hotline: 0903 99 00 20</Row>
+                <Row icon={<Mail className="size-4" />}>sales@hieudanducngan.com</Row>
               </ul>
 
               <div className="mt-10 aspect-video overflow-hidden rounded-xs">
-                <div
-                  className="h-full w-full"
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=526+%C4%90i%E1%BB%87n+Bi%C3%AAn+Ph%E1%BB%A7%2C+Ph%C6%B0%E1%BB%9Dng+11%2C+Qu%E1%BA%ADn+10%2C+TP.+H%E1%BB%93+Ch%C3%AD+Minh"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="grid h-full w-full place-items-center"
                   style={{
                     backgroundImage:
                       "linear-gradient(135deg, rgba(139,90,43,0.35), rgba(58,36,24,0.85))",
                   }}
                 >
-                  <div className="grid h-full place-items-center text-xs tracking-[0.3em] text-white/70 uppercase">
+                  <div className="flex items-center gap-2 text-xs tracking-[0.3em] text-white/70 uppercase transition hover:text-white">
                     {t("contact.mapLabel")}
                   </div>
-                </div>
+                </a>
               </div>
             </div>
           </Reveal>

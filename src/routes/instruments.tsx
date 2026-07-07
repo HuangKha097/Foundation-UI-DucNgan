@@ -41,7 +41,7 @@ function Instruments() {
       </div>
 
       <div className="mt-24 space-y-32">
-        {instruments.slice(0, 4).map((it, i) => (
+        {instruments.map((it, i) => (
           <section key={it.slug} className="container-wide">
             <div
               className={

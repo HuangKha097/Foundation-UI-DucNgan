@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Play } from "lucide-react";
-import artisan from "@/assets/artisan.jpg";
+import artisanAsset from "@/assets/nghenhan.png.asset.json";
 import craft from "@/assets/craft.jpg";
 import culture from "@/assets/culture.jpg";
 import { Reveal, RevealStagger, revealItem } from "@/components/site/Reveal";
@@ -55,7 +55,7 @@ function Craftsmanship() {
         <Reveal delay={0.15} className="md:col-span-6">
           <div className="relative aspect-[4/5] overflow-hidden rounded-xs bg-walnut-deep">
             <motion.img
-              src={artisan}
+              src={artisanAsset.url}
               alt="Master artisan Nguyễn Văn Tâm"
               initial={{ scale: 1.12 }}
               whileInView={{ scale: 1 }}
